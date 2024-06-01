@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "braintumorsegmentation"
+version = "0.1.0"
+description = "An app for designed for faster detection of tumor in brain images"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+torch = "^2.3.0"
+numpy = "^1.26.4"
+scipy = "^1.13.1"
+nibabel = "^5.2.1"
+nipype = "^1.8.6"
+h5py = "^3.11.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
