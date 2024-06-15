@@ -16,7 +16,7 @@
                 link.href = '#';
                 link.innerHTML = pred.id;
                 link.onclick = () => fetchSpecificPred(pred.id);
-                listItem.innerHTML = `${pred.subject}, Eval: ${pred.evaluation}, Danger: ${pred.danger}, <a href="${pred.link}">Link</a>`;
+                listItem.innerHTML = `${pred.name}, Danger: ${pred.danger}, <a href="${pred.link}">Link</a>`;
                 listItem.appendChild(link);
                 predList.appendChild(listItem);
             });
@@ -27,7 +27,7 @@
             const data = await response.json();
             const personInfo = document.getElementById('predInfo');
             if (response.ok) {
-                personInfo.innerHTML = `Personal Info: ${data.subject}, Eval: ${data.evaluation}, Danger: ${data.danger}, <a href="${data.link}">Link</a>`;
+                personInfo.innerHTML = `Personal Info: ${data.name}, Danger: ${data.danger}, <a href="${data.link}">Link</a>`;
             } else {
                 personInfo.innerHTML = 'Person not found';
             }

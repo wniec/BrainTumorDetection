@@ -245,12 +245,14 @@ class AttentionUNet(nn.Module):
 
 
 def read_3d(patient_name: str):
-    path = os.path.join("skull_segmented", patient_name)
+    path = os.path.join("no_skull", patient_name)
     t1 = nib.load(os.path.join(path, "T1.nii.gz")).get_fdata()
     t2 = nib.load(os.path.join(path, "T2.nii.gz")).get_fdata()
     image = np.zeros((2, 155, 240, 240))
     image[0, :, :, :] = np.array(t1).transpose(2, 0, 1)
     image[1, :, :, :] = np.array(t2).transpose(2, 0, 1)
+    os.rmdir(os.path.join(path, "T1.nii.gz"))
+    os.rmdir(os.path.join(path, "T2.nii.gz"))
     return image
 
 

@@ -1,27 +1,53 @@
-import os.path
-import h5py
-import numpy as np
-from matplotlib import pyplot as plt
+from typing import List
+import uvicorn
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
-import dicom_transformer
-import transform
-import model
+from tests import dummy_patients_test
+from models import Patient, Queue
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this in production to specify allowed origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+queue = Queue()
+
+
+@app.get("/preds", response_model=List[Patient])
+def general_predictions():
+    sorted_predictions = sorted(list(queue.patients.values()), key=lambda x: x.danger, reverse=True)
+    print("Returning: ", sorted_predictions)
+    return sorted_predictions
+    # return {"link": "Welcome to the REST API"}
+
+
+def find_by_uuid(patient_id: str):
+    if patient_id in queue.patients:
+        return queue.patients[patient_id]
+    else:
+        return None
+
+
+@app.get("/pred/{pred_id}", response_model=Patient)
+def specific_patients(patient_id: str):
+    p = find_by_uuid(patient_id)
+    if p is not None:
+        return p
+    else:
+        raise HTTPException(status_code=404, detail="Patient not found")
+
 
 if __name__ == "__main__":
-    patient_name = input("enter patient name: ")
-    transform.register(patient_name)
-    transform.bet_transform(patient_name)
-    prediction = model.prediction_for_volume(patient_name)
 
-    pred_path = os.path.join("predictions", patient_name)
-    os.mkdir(pred_path)
-    with h5py.File(os.path.join(pred_path, 'prediction.h5'), "w") as f:
-        f.create_dataset("prediction", data=prediction)
-    priority_value = np.sum(prediction)
-    print(f"priority value is {priority_value:.2f}")
-    '''
-    img = dicom_transformer.load_dicom('T1nii/image.0001.dcm')
-    plt.imshow(img.pixel_array)
-    plt.show()
-    dicom_transformer.dicom_to_nii_gz(img, 'output.nii.gz')
-    '''
+    patients = dummy_patients_test.get_patients()# trwa długo - testuje też ładowanie predykcji
+
+    for patient in patients:
+        queue.patients[patient.id] = patient
+
+    uvicorn.run(app, host="127.0.0.1", port=8000)
