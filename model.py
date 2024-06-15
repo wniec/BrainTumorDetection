@@ -5,6 +5,8 @@ import numpy as np
 from torch import nn
 from scipy.ndimage import gaussian_filter
 
+from utils import read_3d
+
 
 class EncoderBlock(nn.Module):
     def __init__(self, in_channels, out_channels, activation=nn.ReLU()):
@@ -244,18 +246,6 @@ class AttentionUNet(nn.Module):
         return x
 
 
-def read_3d(patient_name: str):
-    path = os.path.join("no_skull", patient_name)
-    t1 = nib.load(os.path.join(path, "T1.nii.gz")).get_fdata()
-    t2 = nib.load(os.path.join(path, "T2.nii.gz")).get_fdata()
-    image = np.zeros((2, 155, 240, 240))
-    image[0, :, :, :] = np.array(t1).transpose(2, 0, 1)
-    image[1, :, :, :] = np.array(t2).transpose(2, 0, 1)
-    os.rmdir(os.path.join(path, "T1.nii.gz"))
-    os.rmdir(os.path.join(path, "T2.nii.gz"))
-    return image
-
-
 def get_model() -> AttentionUNet:
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = AttentionUNet()
@@ -268,9 +258,9 @@ def gaussian_blur(image, sigma):
     return gaussian_filter(image, sigmas)
 
 
-def prediction_for_volume(patient_name: str):
+def prediction_for_volume(patient_id: str):
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    image = read_3d(patient_name)
+    image = read_3d(patient_id)
     model = get_model()
     predictions = np.zeros(image.shape[1:])
     for i in range(155):
