@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction List</title>
+    <script>
+        async function fetchPreds() {
+            const response = await fetch('http://127.0.0.1:8000/preds');
+            const data = await response.json();
+            const predList = document.getElementById('predList');
+            predList.innerHTML = '';
+            data.forEach(pred => {
+                const listItem = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = '#';
+                link.innerHTML = pred.id;
+                link.onclick = () => fetchSpecificPred(pred.id);
+                listItem.innerHTML = `${pred.name}, Danger: ${pred.danger}, <a href="${pred.link}">Link</a>`;
+                listItem.appendChild(link);
+                predList.appendChild(listItem);
+            });
+        }
+
+        async function fetchSpecificPred(predid) {
+            const response = await fetch(`http://127.0.0.1:8000/pred/${predid}`);
+            const data = await response.json();
+            const personInfo = document.getElementById('predInfo');
+            if (response.ok) {
+                personInfo.innerHTML = `Personal Info: ${data.name}, Danger: ${data.danger}, <a href="${data.link}">Link</a>`;
+            } else {
+                personInfo.innerHTML = 'Person not found';
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>Prediction List</h1>
+<button onclick="fetchPreds()">Get All People</button>
+<ul id="predList"></ul>
+
+<!--<h2>Search Person</h2>-->
+<!--<label for="name">Name:</label>-->
+<!--<input type="text" id="name" name="name">-->
+<!--<label for="surname">Surname:</label>-->
+<!--<input type="text" id="surname" name="surname">-->
+<!--<button onclick="fetchPerson()">Search</button>-->
+<p id="predInfo"></p>
+</body>
+</html>
