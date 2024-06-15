@@ -1,7 +1,9 @@
 import os.path
 import h5py
 import numpy as np
+from matplotlib import pyplot as plt
 
+import dicom_transformer
 import transform
 import model
 
@@ -17,3 +19,9 @@ if __name__ == "__main__":
         f.create_dataset("prediction", data=prediction)
     priority_value = np.sum(prediction)
     print(f"priority value is {priority_value:.2f}")
+    '''
+    img = dicom_transformer.load_dicom('T1nii/image.0001.dcm')
+    plt.imshow(img.pixel_array)
+    plt.show()
+    dicom_transformer.dicom_to_nii_gz(img, 'output.nii.gz')
+    '''
