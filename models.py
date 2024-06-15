@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from pydantic import BaseModel
 
@@ -8,6 +8,12 @@ class Patient(BaseModel):
     link: str
     name: str
     danger: int
+
+
+class PatientData(BaseModel):
+    patient: Patient
+    image: List[List[List[List[float]]]] | None
+    tumor_map: List[List[List[float]]] | None
 
 
 class Queue(BaseModel):

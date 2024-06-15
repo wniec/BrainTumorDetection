@@ -20,8 +20,7 @@ def bet_transform(patient_name):
     )
     bet.inputs.output_type = "NIFTI_GZ"
     bet.run()
-    os.remove(os.path.join(src_path, "T1.nii.gz"))
-    os.remove(os.path.join(src_path, "T2.nii.gz"))
+    shutil.rmtree(src_path)
 
 
 def register(patient: str):
@@ -42,5 +41,5 @@ def register(patient: str):
         src=os.path.join(input_path, "T2.nii.gz"),
         dst=os.path.join(output_path, "T2.nii.gz"),
     )
-    os.remove(os.path.join(input_path, "T1.nii.gz"))
+    shutil.rmtree(input_path)
     os.remove("subject_to_template.mat")
