@@ -16,7 +16,7 @@
                 link.href = '#';
                 link.innerHTML = patient.id;
                 link.onclick = () => fetchPatientData(patient.id);
-                listItem.innerHTML = `${patient.name}, Danger: ${patient.danger}, <a href="${patient.link}">Link</a>`;
+                listItem.innerHTML = `${patient.name}, Danger: ${patient.danger}, <a href="doctors_view.html?id=${patient.id}">Link</a>`;
                 listItem.appendChild(link);
                 patientsList.appendChild(listItem);
             });

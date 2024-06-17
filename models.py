@@ -12,8 +12,8 @@ class Patient(BaseModel):
 
 class PatientData(BaseModel):
     patient: Patient
-    image: List[List[List[List[float]]]] | None
-    tumor_map: List[List[List[float]]] | None
+    image: List[List[List[List[float]]]] 
+    tumor_map: List[List[List[float]]]
 
 
 class Queue(BaseModel):

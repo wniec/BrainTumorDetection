@@ -10,7 +10,7 @@ import utils
 
 from tests import dummy_patients_test
 from models import Patient, Queue, PatientData
-
+import matplotlib.image
 app = FastAPI()
 
 app.add_middleware(
@@ -20,7 +20,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+ 
 queue = Queue()
 
 
@@ -53,18 +53,29 @@ def get_patient_data(patient_id: str):
     p = find_by_uuid(patient_id)
     if p is not None:
         image = model.read_3d(patient_id)
-        return PatientData(patient=patient, image=image.tolist(),
-                           tumor_map=utils.read_prediction(patient_id).tolist())
+        
+        for version in image:
+            for i, slice in enumerate(version):
+                matplotlib.image.imsave(os.path.join("tmp", f"image_{patient_id}_{i}.png"), slice)
+
+        tumor_map=utils.read_prediction(patient_id)
+
+        for i, slice in enumerate(tumor_map):
+                matplotlib.image.imsave(os.path.join("tmp", f"mask_{patient_id}_{i}.png"), slice)
+        return {"length" : len(image[0])}
     else:
         raise HTTPException(status_code=404, detail="Patient not found")
 
 
 if __name__ == "__main__":
-    '''
-    patients = dummy_patients_test.get_patients()# trwa długo - testuje też ładowanie predykcji
-    for patient in patients:
-        queue.patients[patient.id] = patient
-    '''
+    for folder in ['tmp', 'input', "no_skull", "tests", "registered"]:
+        if not os.path.exists(folder):
+            os.mkdir(folder)
+
+    # patients = dummy_patients_test.get_patients()# trwa długo - testuje też ładowanie predykcji
+    # for patient in patients:
+    #     queue.patients[patient.id] = patient
+    
     patient_names = ['A', 'B', 'C']
     for patient_name, patient_id in zip(patient_names, os.listdir('no_skull')):
         queue.patients[patient_id] = patient = Patient(
