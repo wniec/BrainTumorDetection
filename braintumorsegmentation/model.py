@@ -1,6 +1,4 @@
 import torch
-import os
-import nibabel as nib
 import numpy as np
 from torch import nn
 from scipy.ndimage import gaussian_filter
