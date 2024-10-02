@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 
 import utils
+from braintumorsegmentation.tests import dummy_patients_test
 
 from models import Patient, Queue
 
@@ -70,14 +71,14 @@ def get_patient_data_t1(patient_id: str, image_id: int, mode: str):
 
 
 if __name__ == "__main__":
-    """
-    for folder in ['tmp', 'input', "no_skull", "tests", "registered", "predictions"]:
+    for folder in ["tmp", "input", "no_skull", "tests", "registered", "predictions"]:
         if not os.path.exists(folder):
             os.mkdir(folder)
-    patients = dummy_patients_test.get_patients()# trwa długo - testuje też ładowanie predykcji
+    patients = (
+        dummy_patients_test.get_patients()
+    )  # trwa długo - testuje też ładowanie predykcji
     for patient in patients:
         queue.patients[patient.id] = patient
-    """
     patient_names = ["A", "B", "C"]
     for patient_name, patient_id in zip(patient_names, os.listdir("no_skull")):
         queue.patients[patient_id] = patient = Patient(
