@@ -263,6 +263,8 @@ def prediction_for_volume(patient_id: str):
     predictions = np.zeros(image.shape[1:])
     for i in range(155):
         image_2d = image[:, i, :, :]
+        image_min, image_max = np.min(image_2d), np.max(image_2d)
+        image_2d = (image_2d - image_min) / (image_max - image)
         image_2d = torch.tensor(image_2d, dtype=torch.float32).to(device)
         logit = model(image_2d.reshape((1, *image_2d.shape)))
         predictions[i, :, :] = logit.detach().cpu().numpy().squeeze(0).reshape(240, 240)

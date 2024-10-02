@@ -12,7 +12,7 @@ class Patient(BaseModel):
 
 class PatientData(BaseModel):
     patient: Patient
-    image: List[List[List[List[float]]]] 
+    image: List[List[List[List[float]]]]
     tumor_map: List[List[List[float]]]
 
 

@@ -10,7 +10,7 @@ def transform_predict(patient: Patient):
     transform.register(patient.id)
     transform.bet_transform(patient.id)
     prediction = model.prediction_for_volume(patient.id)
-    with h5py.File(os.path.join("predictions", f'{patient.id}.h5'), "w") as f:
+    with h5py.File(os.path.join("predictions", f"{patient.id}.h5"), "w") as f:
         f.create_dataset("prediction", data=prediction)
     priority_value = np.sum(prediction)
     print(f"priority value of {patient.name} is {priority_value:.2f}")
