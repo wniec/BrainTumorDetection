@@ -1,1 +1,7 @@
 tmp
+.idea
+**/__pycache__/**
+poetry.lock
+braintumorsegmentation/input/
+braintumorsegmentation/no_skull/
+braintumorsegmentation/predictions/

@@ -65,6 +65,8 @@ def get_patient_data_t1(patient_id: str, image_id: int, mode: str):
             iio.imwrite(buf, image, plugin="pillow", format="PNG")
             im_bytes = buf.getvalue()
         headers = {"Content-Disposition": 'inline; filename="test.png"'}
+        headers["Cache-Control"] = 'public, max-age=3600'
+        headers["ETag"] = 'unique-resource-id'
         return Response(im_bytes, headers=headers, media_type="image/png")
     else:
         raise HTTPException(status_code=404, detail="Patient not found")
