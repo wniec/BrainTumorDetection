@@ -20,6 +20,7 @@ def read_2d(patient_id: str, index: int, mode: str) -> np.ndarray:
         background = nib.load(os.path.join(path, f"{mode.upper()}.nii.gz")).get_fdata()[
             :, :, index
         ]
+        background = background / np.max(background)
         tumor_map = read_prediction(patient_id)
         image = np.zeros((240, 240, 3))
         danger = np.array(tumor_map)[index, :, :]
@@ -30,6 +31,7 @@ def read_2d(patient_id: str, index: int, mode: str) -> np.ndarray:
         t1 = (
             nib.load(os.path.join(path, "T1.nii.gz")).get_fdata()[120, :, :].transpose()
         )
+        t1 = t1 / np.max(t1)
         image = np.repeat(t1[:, :, np.newaxis], 3, axis=2)
         image[index, :, 1] = np.ones((1, 240))
         image = image[::-1, :]
