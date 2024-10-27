@@ -1,1 +1,7 @@
 tmp
+/braintumorsegmentation/predictions
+/braintumorsegmentation/no_skull
+/braintumorsegmentation/input
+/braintumorsegmentation/tests
+**/__pycache__/**
+.idea
