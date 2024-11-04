@@ -20,6 +20,13 @@ def bet_transform(patient_name):
     )
     bet.inputs.output_type = "NIFTI_GZ"
     bet.run()
+    if os.path.exists(os.path.join(src_path, "FLAIR.nii.gz")):
+        bet = fsl.BET(
+            in_file=os.path.join(src_path, "FLAIR.nii.gz"),
+            out_file=os.path.join(dst_path, "FLAIR.nii.gz"),
+        )
+        bet.inputs.output_type = "NIFTI_GZ"
+        bet.run()
     shutil.rmtree(src_path)
 
 
@@ -27,8 +34,11 @@ def register(patient: str):
     input_path = os.path.join("input", patient)
     output_path = os.path.join("registered", patient)
     os.mkdir(output_path)
+
     t1 = os.path.join(input_path, "T1.nii.gz")
     t2 = os.path.join(input_path, "T2.nii.gz")
+    flair = os.path.join(input_path, "FLAIR.nii.gz")
+
     flt = fsl.FLIRT(bins=640, cost_func="mutualinfo")
     flt.inputs.in_file = t1
     flt.inputs.reference = t2
@@ -37,6 +47,17 @@ def register(patient: str):
     flt.inputs.dof = 12
     flt.inputs.out_matrix_file = "subject_to_template.mat"
     flt.run()
+
+    if os.path.exists(flair):
+        flt = fsl.FLIRT(bins=640, cost_func="mutualinfo")
+        flt.inputs.in_file = flair
+        flt.inputs.reference = t2
+        flt.inputs.output_type = "NIFTI_GZ"
+        flt.inputs.out_file = os.path.join(output_path, "FLAIR.nii.gz")
+        flt.inputs.dof = 12
+        flt.inputs.out_matrix_file = "subject_to_template.mat"
+        flt.run()
+
     shutil.move(
         src=os.path.join(input_path, "T2.nii.gz"),
         dst=os.path.join(output_path, "T2.nii.gz"),

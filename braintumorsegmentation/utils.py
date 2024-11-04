@@ -6,12 +6,21 @@ import numpy as np
 
 def read_3d(patient_id: str) -> np.ndarray:
     path = os.path.join("no_skull", patient_id)
+    flair_path = os.path.join(path, "FLAIR.nii.gz")
     t1 = nib.load(os.path.join(path, "T1.nii.gz")).get_fdata()
     t2 = nib.load(os.path.join(path, "T2.nii.gz")).get_fdata()
-    image = np.zeros((2, 155, 240, 240))
-    image[0, :, :, :] = np.array(t1).transpose(2, 0, 1)
-    image[1, :, :, :] = np.array(t2).transpose(2, 0, 1)
-    return image
+    if os.path.exists(flair_path):
+        flair = nib.load(flair_path).get_fdata()
+        image = np.zeros((3, 155, 240, 240))
+        image[0, :, :, :] = np.array(t1).transpose(2, 0, 1)
+        image[1, :, :, :] = np.array(t2).transpose(2, 0, 1)
+        image[2, :, :, :] = np.array(flair).transpose(2, 0, 1)
+        return image
+    else:
+        image = np.zeros((2, 155, 240, 240))
+        image[0, :, :, :] = np.array(t1).transpose(2, 0, 1)
+        image[1, :, :, :] = np.array(t2).transpose(2, 0, 1)
+        return image
 
 
 def read_2d(patient_id: str, index: int, mode: str) -> np.ndarray:
