@@ -141,13 +141,12 @@ class AttentionResBlock(nn.Module):
 
 
 class AttentionUNet(nn.Module):
-    def __init__(self):
+    def __init__(self, in_channels):
         super().__init__()
 
         # Config
-        in_channels = 2  # Input images have 4 channels
-        out_channels = 1  # Mask has 3 channels
-        n_filters = 64  # Scaled down from 64 in original paper
+        out_channels = 1  # Mask has 1 channel
+        n_filters = 64
         activation = nn.ReLU()
 
         # Up and downsampling methods
@@ -244,10 +243,11 @@ class AttentionUNet(nn.Module):
         return x
 
 
-def get_model() -> AttentionUNet:
+def get_model(flair_present: bool = False) -> AttentionUNet:
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = AttentionUNet()
-    model.load_state_dict(torch.load("weights.pth", map_location=device))
+    model = AttentionUNet(in_channels=3 if flair_present else 2)
+    weights_path = "weights_flair.pth" if flair_present else "weights.pth"
+    model.load_state_dict(torch.load(weights_path, map_location=device))
     return model.to(device)
 
 
@@ -259,7 +259,8 @@ def gaussian_blur(image, sigma):
 def prediction_for_volume(patient_id: str):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     image = read_3d(patient_id)
-    model = get_model()
+    flair_present = image.shape[0] == 3
+    model = get_model(flair_present)
     predictions = np.zeros(image.shape[1:])
     for i in range(155):
         image_2d = image[:, i, :, :]
