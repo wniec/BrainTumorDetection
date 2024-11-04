@@ -7,6 +7,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import Response
+import zipfile
 
 import utils
 from braintumorsegmentation.tests import dummy_patients_test
@@ -68,6 +69,45 @@ def get_patient_data_t1(patient_id: str, image_id: int, mode: str):
         return Response(im_bytes, headers=headers, media_type="image/png")
     else:
         raise HTTPException(status_code=404, detail="Patient not found")
+
+@app.get("/images/{patient_id}/{image_id}")
+def get_patient_data_full_slice(patient_id: str, image_id: int):
+    p = find_by_uuid(patient_id)
+    if p is not None:
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            for mode in ["t1", "t2", "profile"]:
+                im_buf = io.BytesIO()
+                image = utils.read_2d(patient_id, image_id, mode)
+                iio.imwrite(im_buf, image, plugin="pillow", format="PNG")
+                im_buf.seek(0)
+                zf.writestr(f"patient/{image_id}/{mode}.png", im_buf.read())
+
+        buf.seek(0)
+
+        headers = {"Content-Disposition": 'attachment; filename="test.zip"'}
+        return Response(buf.getvalue(), media_type="application/zip", headers=headers)
+
+@app.get("/images/{patient_id}")
+def get_patient_data_full_head(patient_id: str):
+    p = find_by_uuid(patient_id)
+    if p is not None:
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+            for image_id in range(154):
+                for mode in ["t1", "t2", "profile"]:
+                    im_buf = io.BytesIO()
+                    image = utils.read_2d(patient_id, image_id, mode)
+                    iio.imwrite(im_buf, image, plugin="pillow", format="PNG")
+                    im_buf.seek(0)
+                    zf.writestr(f"patient/{image_id}/{mode}.png", im_buf.read())
+
+        buf.seek(0)
+
+        headers = {"Content-Disposition": 'attachment; filename="test.zip"'}
+        return Response(buf.getvalue(), media_type="application/zip", headers=headers)
+
+
 
 
 if __name__ == "__main__":
