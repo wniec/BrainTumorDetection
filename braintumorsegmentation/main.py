@@ -1,17 +1,18 @@
 import io
 import os
+import socket
+import zipfile
 from typing import List
-from imageio import v3 as iio
+
 import numpy as np
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import Response, StreamingResponse
-import zipfile
-import socket
+from imageio import v3 as iio
+from starlette.responses import Response
 
 import utils
-
+from braintumorsegmentation.tests import dummy_patients_test
 from models import Patient, Queue
 
 app = FastAPI()
@@ -53,51 +54,20 @@ def specific_patients(patient_id: str):
         raise HTTPException(status_code=404, detail="Patient not found")
 
 
-@app.get("/images/{patient_id}/{image_id}/{mode}")
-def get_patient_data_t1(patient_id: str, image_id: int, mode: str):
-    if not (mode == "t1" or mode == "t2" or mode == "profile"):
-        raise HTTPException(
-            status_code=400, detail="selected image mode is not supported"
-        )
-    p = find_by_uuid(patient_id)
-    if p is not None:
-        image = utils.read_2d(patient_id, image_id, mode)
-        with io.BytesIO() as buf:
-            iio.imwrite(buf, image, plugin="pillow", format="PNG")
-            im_bytes = buf.getvalue()
-        headers = {"Content-Disposition": 'inline; filename="test.png"'}
-        return Response(im_bytes, headers=headers, media_type="image/png")
-    else:
-        raise HTTPException(status_code=404, detail="Patient not found")
-
-
-@app.get("/images/{patient_id}/{image_id}")
-def get_patient_data_full_slice(patient_id: str, image_id: int):
-    p = find_by_uuid(patient_id)
-    if p is not None:
-        buf = io.BytesIO()
-        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
-            for mode in ["t1", "t2", "profile"]:
-                im_buf = io.BytesIO()
-                image = utils.read_2d(patient_id, image_id, mode)
-                iio.imwrite(im_buf, image, plugin="pillow", format="PNG")
-                im_buf.seek(0)
-                zf.writestr(f"patient/{image_id}/{mode}.png", im_buf.read())
-
-        buf.seek(0)
-
-        headers = {"Content-Disposition": 'attachment; filename="test.zip"'}
-        return StreamingResponse(buf, media_type="application/zip", headers=headers)
-
-
 @app.get("/images/{patient_id}")
 def get_patient_data_full_head(patient_id: str):
     p = find_by_uuid(patient_id)
     if p is not None:
         buf = io.BytesIO()
         with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
-            for image_id in range(154):
-                for mode in ["t1", "t2", "profile"]:
+            for image_id in range(155):
+                for mode in ["t1", "t2", "profile", "prediction"] + (
+                    ["flair"]
+                    if os.path.exists(
+                        os.path.join("no_skull", patient_id, "FLAIR.nii.gz")
+                    )
+                    else []
+                ):
                     im_buf = io.BytesIO()
                     image = utils.read_2d(patient_id, image_id, mode)
                     iio.imwrite(im_buf, image, plugin="pillow", format="PNG")
@@ -121,15 +91,17 @@ if __name__ == "__main__":
     for patient in patients:
         queue.patients[patient.id] = patient
     """
-    patient_names = ["A", "B", "C"]
+    patient_names = ["A", "B", "C", "D"]
     for patient_name, patient_id in zip(patient_names, os.listdir("no_skull")):
+        if os.path.exists(os.path.join("no_skull", patient_id, "FLAIR.nii.gz")):
+            print(f'patient {patient_name} has FLAIR image done')
         queue.patients[patient_id] = patient = Patient(
             id=patient_id,
             name=patient_name,
             link="https://example.com",
             danger=int(np.sum(utils.read_prediction(patient_id))),
         )
-
+    # """
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
     hostname = s.getsockname()[0]
