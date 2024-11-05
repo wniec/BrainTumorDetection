@@ -29,9 +29,8 @@ def read_2d(patient_id: str, index: int, mode: str) -> np.ndarray:
         tumor_map = read_prediction(patient_id)
         image = np.zeros((240, 240, 4))
         danger = np.array(tumor_map)[index, :, :]
-        image[:, :, 0] = np.where(danger < 0.4, 0, 1)
-        image[:, :, 1] = np.where(np.abs(danger - 0.5) > 0.1, 0, 1)
-        image[:, :, 3] = np.where(danger < 0.4, 0, 1)
+        image[:, :, 0] = np.ones((240, 240))
+        image[:, :, 3] = danger
         pass
     elif mode != "profile":
         background = nib.load(os.path.join(path, f"{mode.upper()}.nii.gz")).get_fdata()[

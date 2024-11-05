@@ -91,7 +91,7 @@ if __name__ == "__main__":
     for patient in patients:
         queue.patients[patient.id] = patient
     """
-    patient_names = ["A", "B", "C", "D"]
+    patient_names = ["Alice", "Bob", "Carol", "Dave"]
     for patient_name, patient_id in zip(patient_names, os.listdir("no_skull")):
         if os.path.exists(os.path.join("no_skull", patient_id, "FLAIR.nii.gz")):
             print(f'patient {patient_name} has FLAIR image done')
