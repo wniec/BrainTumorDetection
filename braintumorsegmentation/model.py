@@ -262,7 +262,8 @@ def prediction_for_volume(patient_id: str):
     flair_present = image.shape[0] == 3
     model = get_model(flair_present)
     predictions = np.zeros(image.shape[1:])
-    for i in range(155):
+    z_size = image[0].shape[2]
+    for i in range(z_size):
         image_2d = image[:, i, :, :]
         image_min, image_max = np.min(image_2d), np.max(image_2d)
         if image_min != image_max:
@@ -271,7 +272,7 @@ def prediction_for_volume(patient_id: str):
         logit = model(image_2d.reshape((1, *image_2d.shape)))
         predictions[i, :, :] = logit.detach().cpu().numpy().squeeze(0).reshape(240, 240)
     gaussian_blur(image, 1)
-    for i in range(155):
+    for i in range(z_size):
         image_2d = predictions[i, :, :]
         image_2d = torch.tensor(image_2d, dtype=torch.float32).to(device)
         pred = torch.sigmoid(image_2d)

@@ -54,3 +54,19 @@ def read_prediction(patient_id: str):
     with h5py.File(path, "r") as f:
         data = np.array(f["prediction"])
     return data
+
+
+def get_brain_volume_for_pacient(patient_id: str) -> float:
+    path = os.path.join("no_skull", patient_id)
+    t1 = nib.load(os.path.join(path, "T1.nii.gz"))
+    return get_brain_volume(t1)
+
+def get_brain_volume(nii_img: nib.nifti1.Nifti1Image):
+    return get_brain_percentage(nii_img.get_fdata()) * get_image_volume(nii_img)
+
+def get_brain_percentage(img: np.array):
+    return 1-len(img[img == 0])/len(img[img >= 0])
+
+def get_image_volume(nii_img: nib.nifti1.Nifti1Image):
+    dim = nii_img.header["dim"]
+    return np.prod(dim[1:dim[0]+1])
