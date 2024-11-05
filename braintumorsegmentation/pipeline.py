@@ -3,6 +3,7 @@ import h5py
 import numpy as np
 import transform
 import model
+import utils
 from models import Patient
 
 
@@ -14,7 +15,8 @@ def transform_predict(patient: Patient):
         f.create_dataset("prediction", data=prediction)
     priority_value = np.sum(prediction)
     print(f"priority value of {patient.name} is {priority_value:.2f}")
-    return priority_value
+    brain_volume = utils.get_brain_volume_for_pacient(patient.id)
+    return priority_value/brain_volume
 
     # img = dicom_transformer.load_dicom('nii2dcm.dcm')
     # plt.imshow(img.pixel_array[:, :, 80])
