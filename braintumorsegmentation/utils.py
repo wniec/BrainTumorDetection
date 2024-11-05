@@ -25,22 +25,24 @@ def read_3d(patient_id: str) -> np.ndarray:
 
 def read_2d(patient_id: str, index: int, mode: str) -> np.ndarray:
     path = os.path.join("no_skull", patient_id)
-    if mode != "profile":
+    if mode == "prediction":
+        tumor_map = read_prediction(patient_id)
+        image = np.zeros((240, 240, 4))
+        danger = np.array(tumor_map)[index, :, :]
+        image[:, :, 0] = np.ones((240, 240))
+        image[:, :, 3] = danger
+        pass
+    elif mode != "profile":
         background = nib.load(os.path.join(path, f"{mode.upper()}.nii.gz")).get_fdata()[
             :, :, index
         ]
         background = background / (np.max(background) if np.max(background) > 0 else 1)
-        tumor_map = read_prediction(patient_id)
-        image = np.zeros((240, 240, 3))
-        danger = np.array(tumor_map)[index, :, :]
-        image[:, :, 0] = np.where(danger < 0.4, background, 1)
-        image[:, :, 1] = np.where(np.abs(danger - 0.5) > 0.1, background, 1)
-        image[:, :, 2] = background
+        image = np.repeat(background[:, :, np.newaxis], 3, axis=2)
     else:
         t1 = (
             nib.load(os.path.join(path, "T1.nii.gz")).get_fdata()[120, :, :].transpose()
         )
-        t1 = t1 / np.max(t1)
+        t1 = t1 / (np.max(t1) if np.max(t1) > 0 else 1)
         image = np.repeat(t1[:, :, np.newaxis], 3, axis=2)
         image[index, :, 1] = np.ones((1, 240))
         image = image[::-1, :]
