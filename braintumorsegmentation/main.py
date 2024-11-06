@@ -82,7 +82,7 @@ def get_patient_data_full_head(patient_id: str):
 
 if __name__ == "__main__":
     """
-    for folder in ["tmp", "input", "no_skull", "tests", "registered", "predictions"]:
+    for folder in ["input", "no_skull", "tests", "registered", "predictions"]:
         if not os.path.exists(folder):
             os.mkdir(folder)
     patients = (
@@ -99,7 +99,7 @@ if __name__ == "__main__":
             id=patient_id,
             name=patient_name,
             link="https://example.com",
-            danger=int(np.sum(utils.read_prediction(patient_id))),
+            danger=utils.get_danger(patient_id),
         )
     # """
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

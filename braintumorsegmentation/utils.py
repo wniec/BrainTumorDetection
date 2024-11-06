@@ -34,8 +34,8 @@ def read_2d(patient_id: str, index: int, mode: str) -> np.ndarray:
         pass
     elif mode != "profile":
         background = nib.load(os.path.join(path, f"{mode.upper()}.nii.gz")).get_fdata()[
-            :, :, index
-        ]
+                     :, :, index
+                     ]
         background = background / (np.max(background) if np.max(background) > 0 else 1)
         image = np.repeat(background[:, :, np.newaxis], 3, axis=2)
     else:
@@ -61,12 +61,19 @@ def get_brain_volume_for_pacient(patient_id: str) -> float:
     t1 = nib.load(os.path.join(path, "T1.nii.gz"))
     return get_brain_volume(t1)
 
+
 def get_brain_volume(nii_img: nib.nifti1.Nifti1Image):
     return get_brain_percentage(nii_img.get_fdata()) * get_image_volume(nii_img)
 
+
 def get_brain_percentage(img: np.array):
-    return 1-len(img[img == 0])/len(img[img >= 0])
+    return 1 - len(img[img == 0]) / len(img[img >= 0])
+
 
 def get_image_volume(nii_img: nib.nifti1.Nifti1Image):
     dim = nii_img.header["dim"]
-    return np.prod(dim[1:dim[0]+1])
+    return np.prod(dim[1:dim[0] + 1])
+
+
+def get_danger(patient_id: str) -> int:
+    return int(np.sum(read_prediction(patient_id)) / get_brain_volume_for_pacient(patient_id) * 10000)

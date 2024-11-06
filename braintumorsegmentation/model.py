@@ -262,7 +262,7 @@ def prediction_for_volume(patient_id: str):
     flair_present = image.shape[0] == 3
     model = get_model(flair_present)
     predictions = np.zeros(image.shape[1:])
-    z_size = image[0].shape[2]
+    z_size = image.shape[1]
     for i in range(z_size):
         image_2d = image[:, i, :, :]
         image_min, image_max = np.min(image_2d), np.max(image_2d)

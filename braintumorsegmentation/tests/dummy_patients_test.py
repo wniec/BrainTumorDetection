@@ -20,6 +20,6 @@ def get_patients():
             os.path.join(os.path.dirname(sys.modules[__name__].__file__), patient_name),
             os.path.join("input", patient.id),
         )
-        patient.danger = int(pipeline.transform_predict(patient))
+        patient.danger = int(pipeline.transform_predict(patient, tests=True))
         patients.append(patient)
     return patients
