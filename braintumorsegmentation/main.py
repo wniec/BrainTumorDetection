@@ -81,7 +81,7 @@ def get_patient_data_full_head(patient_id: str):
 
 
 if __name__ == "__main__":
-    """
+   #  """
     for folder in ["input", "no_skull", "tests", "registered", "predictions"]:
         if not os.path.exists(folder):
             os.mkdir(folder)
