@@ -4,7 +4,6 @@ import socket
 import zipfile
 from typing import List
 
-import numpy as np
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -81,7 +80,7 @@ def get_patient_data_full_head(patient_id: str):
 
 
 if __name__ == "__main__":
-   #  """
+    # """
     for folder in ["input", "no_skull", "tests", "registered", "predictions"]:
         if not os.path.exists(folder):
             os.mkdir(folder)
@@ -91,7 +90,7 @@ if __name__ == "__main__":
     for patient in patients:
         queue.patients[patient.id] = patient
     """
-    patient_names = ["Alice", "Bob", "Carol", "Dave"]
+    patient_names = ["Alice", "Bob", "Carol", "Dave", "Eva"]
     for patient_name, patient_id in zip(patient_names, os.listdir("no_skull")):
         if os.path.exists(os.path.join("no_skull", patient_id, "FLAIR.nii.gz")):
             print(f'patient {patient_name} has FLAIR image done')

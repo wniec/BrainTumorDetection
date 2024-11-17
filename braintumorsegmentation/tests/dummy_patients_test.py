@@ -9,7 +9,7 @@ from models import Patient
 
 def get_patients():
     patients = []
-    for patient_name in ("A", "B", "C", "D"):
+    for patient_name in ("A", "B", "C", "D", "E"):
         patient = Patient(
             id=str(uuid.uuid4()),
             name=patient_name,
