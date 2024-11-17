@@ -1,6 +1,5 @@
 import os.path
 import h5py
-import numpy as np
 import transform
 import model
 import utils
@@ -12,9 +11,9 @@ def transform_predict(patient: Patient, tests=False):
     if tests is False:
         transform.bet_transform(patient.id)
     else:
-        for f in os.listdir('registered'):
-            src_path = os.path.join('registered', f)
-            dst_path = os.path.join('no_skull', f)
+        for f in os.listdir("registered"):
+            src_path = os.path.join("registered", f)
+            dst_path = os.path.join("no_skull", f)
             os.rename(src_path, dst_path)
     prediction = model.prediction_for_volume(patient.id)
     with h5py.File(os.path.join("predictions", f"{patient.id}.h5"), "w") as f:
