@@ -3,10 +3,10 @@ import h5py
 import transform
 import model
 import utils
-from models import Patient
+from models import InternalPatient
 
 
-def transform_predict(patient: Patient, tests=False):
+def transform_predict(patient: InternalPatient, tests=False):
     transform.register(patient.id)
     if tests is False:
         transform.bet_transform(patient.id)
