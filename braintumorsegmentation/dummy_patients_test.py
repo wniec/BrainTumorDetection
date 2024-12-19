@@ -15,12 +15,13 @@ def get_patients():
             name=patient_name,
             link="https://example.com",
             danger=0,
-            pririty=0
+            pririty=0,
+            scan_date=None,
         )
         shutil.copytree(
             os.path.join(os.path.dirname(sys.modules[__name__].__file__), patient_name),
             os.path.join("input", patient.id),
         )
-        patient.danger = int(pipeline.transform_predict(patient, tests=True))
+        #patient.danger = int(pipeline.transform_predict(patient, tests=True))
         patients.append(patient)
     return patients

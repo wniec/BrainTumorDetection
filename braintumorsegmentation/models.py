@@ -8,14 +8,15 @@ class PacientScanData(BaseModel):
     id: str
     name: str
     danger: int
-    pririty: int
+    priority: int
     scan_date: Optional[str]
-    
+
+
 class InternalPatient(BaseModel):
     id: str
     name: str
     danger: float
-    pririty: Optional[float]
+    priority: Optional[float]
     scan_date: Optional[date]
 
 

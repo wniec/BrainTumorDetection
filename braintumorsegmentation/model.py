@@ -271,7 +271,7 @@ def prediction_for_volume(patient_id: str):
         image_2d = torch.tensor(image_2d, dtype=torch.float32).to(device)
         logit = model(image_2d.reshape((1, *image_2d.shape)))
         predictions[i, :, :] = logit.detach().cpu().numpy().squeeze(0).reshape(240, 240)
-    gaussian_blur(image, 1.1)
+    gaussian_blur(image, 1.2)
     for i in range(z_size):
         image_2d = predictions[i, :, :]
         image_2d = torch.tensor(image_2d, dtype=torch.float32).to(device)

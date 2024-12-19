@@ -108,25 +108,10 @@ if __name__ == "__main__":
         if not os.path.exists(folder):
             os.mkdir(folder)
             
-    # patients = (
-    #     dummy_patients_test.get_patients()
-    # )  # trwa długo - testuje też ładowanie predykcji
-    
-    patients = [InternalPatient(
-            id=str(uuid.uuid4()),
-            name="A",
-            link="https://example.com",
-            danger=random.uniform(0, 1),
-            pririty=random.uniform(0, 1),
-            scan_date=None
-        ),InternalPatient(
-            id=str(uuid.uuid4()),
-            name="B",
-            link="https://example.com",
-            danger=random.uniform(0, 1),
-            pririty=random.uniform(0, 1),
-            scan_date=None
-        )]
+    patients = (
+         dummy_patients_test.get_patients()
+    )  # trwa długo - testuje też ładowanie predykcji
+
     
     """
     patient_names = ["Alice", "Bob", "Carol", "Dave", "Eva"]
