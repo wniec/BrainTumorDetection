@@ -3,7 +3,7 @@ import shutil
 import sys
 import uuid
 
-from braintumorsegmentation import pipeline
+import pipeline
 from models import InternalPatient
 
 
@@ -19,7 +19,7 @@ def get_patients():
             scan_date=None,
         )
         shutil.copytree(
-            os.path.join(os.path.dirname(sys.modules[__name__].__file__), patient_name),
+            os.path.join('tests', patient_name),
             os.path.join("input", patient.id),
         )
         patient.danger = int(pipeline.transform_predict(patient, tests=True))
