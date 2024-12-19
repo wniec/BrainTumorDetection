@@ -93,5 +93,6 @@ def get_image_volume(nii_img: nib.nifti1.Nifti1Image):
 
 
 def get_danger(patient_id: str) -> float:
-    return np.sum(read_prediction(patient_id)) / get_brain_volume_for_pacient(patient_id)
-    
+    return np.sum(read_prediction(patient_id)) / get_brain_volume_for_pacient(
+        patient_id
+    )
