@@ -8,25 +8,25 @@ def bet_transform(patient_name):
     src_path = os.path.join("registered", patient_name)
     dst_path = os.path.join("no_skull", patient_name)
     os.mkdir(dst_path)
-    bet = fsl.BET(
+    bet1 = fsl.BET(
         in_file=os.path.join(src_path, "T1.nii.gz"),
         out_file=os.path.join(dst_path, "T1.nii.gz"),
     )
-    bet.inputs.output_type = "NIFTI_GZ"
-    bet.run()
-    bet = fsl.BET(
+    bet1.inputs.output_type = "NIFTI_GZ"
+    bet1.run()
+    bet2 = fsl.BET(
         in_file=os.path.join(src_path, "T2.nii.gz"),
         out_file=os.path.join(dst_path, "T2.nii.gz"),
     )
-    bet.inputs.output_type = "NIFTI_GZ"
-    bet.run()
+    bet2.inputs.output_type = "NIFTI_GZ"
+    bet2.run()
     if os.path.exists(os.path.join(src_path, "FLAIR.nii.gz")):
-        bet = fsl.BET(
+        bet3 = fsl.BET(
             in_file=os.path.join(src_path, "FLAIR.nii.gz"),
             out_file=os.path.join(dst_path, "FLAIR.nii.gz"),
         )
-        bet.inputs.output_type = "NIFTI_GZ"
-        bet.run()
+        bet3.inputs.output_type = "NIFTI_GZ"
+        bet3.run()
     shutil.rmtree(src_path)
 
 

@@ -246,7 +246,8 @@ class AttentionUNet(nn.Module):
 def get_model(flair_present: bool = False) -> AttentionUNet:
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = AttentionUNet(in_channels=3 if flair_present else 2)
-    model.load_state_dict(torch.load("weights.pth", map_location=device))
+    weights_path = "weights_flair.pth" if flair_present else "weights.pth"
+    model.load_state_dict(torch.load(weights_path, map_location=device))
     return model.to(device)
 
 
@@ -258,9 +259,11 @@ def gaussian_blur(image, sigma):
 def prediction_for_volume(patient_id: str):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     image = read_3d(patient_id)
-    model = get_model()
+    flair_present = image.shape[0] == 3
+    model = get_model(flair_present)
     predictions = np.zeros(image.shape[1:])
-    for i in range(155):
+    z_size = image.shape[1]
+    for i in range(z_size):
         image_2d = image[:, i, :, :]
         image_min, image_max = np.min(image_2d), np.max(image_2d)
         if image_min != image_max:
@@ -268,8 +271,8 @@ def prediction_for_volume(patient_id: str):
         image_2d = torch.tensor(image_2d, dtype=torch.float32).to(device)
         logit = model(image_2d.reshape((1, *image_2d.shape)))
         predictions[i, :, :] = logit.detach().cpu().numpy().squeeze(0).reshape(240, 240)
-    gaussian_blur(image, 1)
-    for i in range(155):
+    gaussian_blur(image, 1.1)
+    for i in range(z_size):
         image_2d = predictions[i, :, :]
         image_2d = torch.tensor(image_2d, dtype=torch.float32).to(device)
         pred = torch.sigmoid(image_2d)
