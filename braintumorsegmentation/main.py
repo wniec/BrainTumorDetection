@@ -106,7 +106,7 @@ def delete_from_list():
 
 
 if __name__ == "__main__":
-    """
+    # """
     for folder in ["input", "no_skull", "tests", "registered", "predictions"]:
         if not os.path.exists(folder):
             os.mkdir(folder)
@@ -114,20 +114,20 @@ if __name__ == "__main__":
     patients = (
         dummy_patients_test.get_patients()
     )  # trwa długo - testuje też ładowanie predykcji
-
-
+    """
+    patients = []
     patient_names = ["Alice", "Bob", "Carol", "Dave", "Eva"]
     for patient_name, patient_id in zip(patient_names, os.listdir("no_skull")):
         if os.path.exists(os.path.join("no_skull", patient_id, "FLAIR.nii.gz")):
             print(f'patient {patient_name} has FLAIR image done')
         danger = utils.get_danger(patient_id)
-        queue.patients[patient_id] = InternalPatient(
+        patients.append(InternalPatient(
             id=patient_id,
             name=patient_name,
             link="https://example.com",
             danger=danger,
             priority = danger
-        )
+        ))
     # """
 
     with db_conn() as db:
