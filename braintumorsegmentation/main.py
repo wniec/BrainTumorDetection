@@ -5,6 +5,7 @@ import zipfile
 from typing import List
 
 import uvicorn
+from braintumorsegmentation.models import Patient
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from imageio import v3 as iio
@@ -114,7 +115,7 @@ if __name__ == "__main__":
         dummy_patients_test.get_patients()
     )  # trwa długo - testuje też ładowanie predykcji
 
-    """
+
     patient_names = ["Alice", "Bob", "Carol", "Dave", "Eva"]
     for patient_name, patient_id in zip(patient_names, os.listdir("no_skull")):
         if os.path.exists(os.path.join("no_skull", patient_id, "FLAIR.nii.gz")):

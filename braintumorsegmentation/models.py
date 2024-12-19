@@ -7,17 +7,17 @@ from pydantic import BaseModel
 class PacientScanData(BaseModel):
     id: str
     name: str
-    danger: int
-    priority: int
-    scan_date: Optional[str]
+    danger: float
+    priority: float
+    scan_date: Optional[str] = None
 
 
 class InternalPatient(BaseModel):
     id: str
     name: str
     danger: float
-    priority: Optional[float]
-    scan_date: Optional[date]
+    priority: float
+    scan_date: Optional[date] = None
 
 
 class PatientData(BaseModel):
