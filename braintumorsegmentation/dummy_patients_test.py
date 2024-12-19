@@ -3,7 +3,6 @@ import shutil
 import sys
 import uuid
 
-import pipeline
 from models import InternalPatient
 
 
