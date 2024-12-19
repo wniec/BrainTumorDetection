@@ -1,20 +1,29 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
+from datetime import date
 
 from pydantic import BaseModel
 
 
-class Patient(BaseModel):
+class PacientScanData(BaseModel):
     id: str
-    link: str
     name: str
     danger: int
+    pririty: int
+    scan_date: Optional[str]
+    
+class InternalPatient(BaseModel):
+    id: str
+    name: str
+    danger: float
+    pririty: Optional[float]
+    scan_date: Optional[date]
 
 
 class PatientData(BaseModel):
-    patient: Patient
+    patient: PacientScanData
     image: List[List[List[List[float]]]]
     tumor_map: List[List[List[float]]]
 
 
 class Queue(BaseModel):
-    patients: Dict[str, Patient] = dict()
+    patients: Dict[str, InternalPatient] = dict()
