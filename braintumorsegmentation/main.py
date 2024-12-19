@@ -34,7 +34,7 @@ queue = Queue()
 def general_predictions():
     with db_conn() as db:
         db_res = db.get_top_not_completed_pacients_ordered()
-    returnlist = [map_pacient(pacient) for pacient in db_res]
+    returnlist = [map_patient(pacient) for pacient in db_res]
     print("Returning: ", returnlist)
     return returnlist
 
@@ -46,7 +46,7 @@ def find_by_uuid(patient_id: str):
         return None
 
 
-def map_pacient(pacient: InternalPatient) -> PacientScanData:
+def map_patient(pacient: InternalPatient) -> PacientScanData:
     return PacientScanData(
         id=pacient.id,
         name=pacient.name,
@@ -106,7 +106,7 @@ def delete_from_list():
 
 
 if __name__ == "__main__":
-    # """
+    """
     for folder in ["input", "no_skull", "tests", "registered", "predictions"]:
         if not os.path.exists(folder):
             os.mkdir(folder)
@@ -116,18 +116,8 @@ if __name__ == "__main__":
     )  # trwa długo - testuje też ładowanie predykcji
 
 
-    patient_names = ["Alice", "Bob", "Carol", "Dave", "Eva"]
-    for patient_name, patient_id in zip(patient_names, os.listdir("no_skull")):
-        if os.path.exists(os.path.join("no_skull", patient_id, "FLAIR.nii.gz")):
-            print(f'patient {patient_name} has FLAIR image done')
-        queue.patients[patient_id] = patient = Patient(
-            id=patient_id,
-            name=patient_name,
-            link="https://example.com",
-            danger=utils.get_danger(patient_id),
-        )
+    
     # """
-
     with db_conn() as db:
         db.clear_all_data()
         for patient in patients:
