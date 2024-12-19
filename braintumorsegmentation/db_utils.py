@@ -1,3 +1,4 @@
+import datetime
 import sqlite3
 from models import InternalPatient
 
@@ -111,8 +112,8 @@ class db_conn:
         )
         data = res.fetchall()
         return [
-            InternalPatient(id=str(pacient[0]), name=pacient[1], danger=pacient[3])
-            for pacient in data
+            InternalPatient(id=str(patient[0]), name=patient[1], danger=patient[3], priority=patient[3], scan_date=None)
+            for patient in data
         ]
 
     def get_all(self):
